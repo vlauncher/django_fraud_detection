@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+from datetime import timedelta
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -51,7 +52,7 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    
+    'users.apps.UsersConfig',
 ]
 
 INSTALLED_APPS += THIRD_PARTY_APPS + LOCAL_APPS
@@ -137,3 +138,31 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'users.User'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': False,
+}
+
+DJOSER = {
+    'LOGIN_FIELD': 'email',
+    'ACTIVATION_URL': '/activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': True,
+    'SEND_CONFIRMATION_EMAIL': True,
+    'PASSWORD_RESET_CONFIRM_URL': '/password-reset/confirm/{uid}/{token}',
+    'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
+    'SERIALIZERS': {
+        'user': 'users.serializers.UserSerializer',
+        'current_user': 'users.serializers.UserSerializer',
+    }
+}
